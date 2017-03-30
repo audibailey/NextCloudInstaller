@@ -12,18 +12,20 @@
 # Log File
 # -------------------------------------------
 
-echo "-------------------------------------------"
-echo "Setting up the log file"
-echo "-------------------------------------------"
+# echo "-------------------------------------------"
+# echo "Setting up the log file"
+# echo "-------------------------------------------"
 
-LOG_FILE=/tmp/nextcloud.log
-set -x
-exec 3>&1 1>>${LOG_FILE} 2>&1
+# LOG_FILE=/tmp/nextcloud.log
 
-echo "-------------------------------------------"
-echo "Log file is located at $LOG_FILE"
-echo "-------------------------------------------"
-sleep 5
+# set -x
+
+# exec 3>&1 1>>${LOG_FILE} 2>&1
+
+# echo "-------------------------------------------"
+# echo "Log file is located at $LOG_FILE"
+# echo "-------------------------------------------"
+# sleep 5
 
 # -------------------------------------------
 # Beginning the script
@@ -421,112 +423,6 @@ EOL
     
 }
 
-function config_caddyphp5.6code {	##FIX
-
-    # -------------------------------------------
-    # Caddyfile and Caddy Service Installation (PHP5.6&CODE)
-    # -------------------------------------------
-	
-	DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
-	TLS_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email address for the SSL cert? " 8 93 3>&1 1>&2 2>&3)
-    
-    echo "-------------------------------------------"
-    echo "Configuring the CaddyFile"
-    echo "-------------------------------------------"
-    
-	cat >/etc/caddy/Caddyfile <<EOT
-	$DOMAIN_NAME {
-			root /var/www/$DOMAIN_NAME/nextcloud
-			log /var/tmp/access.log
-			errors /var/tmp/error.log
-			tls $TLS_EMAIL
-			gzip
-			fastcgi / /var/run/php/php5.6-fpm.sock {
-					env PATH /bin
-					ext .php
-					split .php
-			}
-			rewrite {
-					r ^/index.php/.*$
-					to /index.php?{query}
-			}
-
-			# client support (e.g. os x calendar / contacts)
-			redir /.well-known/carddav /remote.php/carddav 301
-			redir /.well-known/caldav /remote.php/caldav 301
-
-			# remove trailing / as it causes errors with php-fpm
-			rewrite {
-					r ^/remote.php/(webdav|caldav|carddav|dav)(\/?)$
-					to /remote.php/{1}
-			}
-
-			rewrite {
-					r ^/remote.php/(webdav|caldav|carddav|dav)/(.+?)(\/?)$
-					to /remote.php/{1}/{2}
-			}
-
-			# .htaccess / data / config / ... shouldn't be accessible from outside
-			status 403 {
-					/.htacces
-					/data
-					/config
-					/db_structure
-					/.xml
-					/README
-			}
-
-			header / Strict-Transport-Security "max-age=31536000;"
-
-	}
-EOT
-	
-    echo "-------------------------------------------"
-    echo "Creating the Caddy Service"
-    echo "-------------------------------------------"
-    
-   cat >/etc/systemd/system/caddy.service <<EOL
-	[Unit]
-	Description=Caddy HTTP/2 web server
-	Documentation=https://caddyserver.com/docs
-	After=network-online.target
-	Wants=network-online.target systemd-networkd-wait-online.service
-
-	[Service]
-	Restart=on-failure
-
-	User=www-data
-	Group=www-data
-
-	Environment=HOME=/etc/ssl/caddy
-
-	ExecStart=/usr/local/bin/caddy -log stdout -agree=true -conf=/etc/caddy/Caddyfile -root=/var/tmp
-	ExecReload=/bin/kill -USR1 $MAINPID
-
-	LimitNOFILE=4096
-	LimitNPROC=64
-
-	PrivateTmp=true
-	PrivateDevices=true
-	ProtectHome=true
-	ProtectSystem=full
-	ReadWriteDirectories=/etc/ssl/caddy
-
-	CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-	AmbientCapabilities=CAP_NET_BIND_SERVICE
-	NoNewPrivileges=true
-
-	[Install]
-	WantedBy=multi-user.target " >> /etc/systemd/system/caddy.service
-EOL
-
-    echo "-------------------------------------------"
-    echo "Enable the Caddy service on start up"
-    echo "-------------------------------------------"
-
-	systemctl enable caddy
-}
-
 function config_caddyphp {
 
     # -------------------------------------------
@@ -623,114 +519,7 @@ EOT
 	NoNewPrivileges=true
 
 	[Install]
-	WantedBy=multi-user.target " >> /etc/systemd/system/caddy.service
-EOL
-
-    echo "-------------------------------------------"
-    echo "Enable the Caddy service on start up"
-    echo "-------------------------------------------"
-
-	systemctl enable caddy
-}
-
-
-function config_caddyphpcode { ##FIX
-
-    # -------------------------------------------
-    # Caddyfile and Caddy Service Installation (PHP7&CODE)
-    # -------------------------------------------
-	
-	DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
-	TLS_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email address for the SSL cert? " 8 93 3>&1 1>&2 2>&3)
-    
-    echo "-------------------------------------------"
-    echo "Configuring the CaddyFile"
-    echo "-------------------------------------------"    
-    
-	cat >/etc/caddy/Caddyfile <<EOT
-	$DOMAIN_NAME {
-			root /var/www/$DOMAIN_NAME/nextcloud
-			log /var/tmp/access.log
-			errors /var/tmp/error.log
-			tls $TLS_EMAIL
-			gzip
-			fastcgi / /var/run/php/php5.6-fpm.sock {
-					env PATH /bin
-					ext .php
-					split .php
-			}
-			rewrite {
-					r ^/index.php/.*$
-					to /index.php?{query}
-			}
-
-			# client support (e.g. os x calendar / contacts)
-			redir /.well-known/carddav /remote.php/carddav 301
-			redir /.well-known/caldav /remote.php/caldav 301
-
-			# remove trailing / as it causes errors with php-fpm
-			rewrite {
-					r ^/remote.php/(webdav|caldav|carddav|dav)(\/?)$
-					to /remote.php/{1}
-			}
-
-			rewrite {
-					r ^/remote.php/(webdav|caldav|carddav|dav)/(.+?)(\/?)$
-					to /remote.php/{1}/{2}
-			}
-
-			# .htaccess / data / config / ... shouldn't be accessible from outside
-			status 403 {
-					/.htacces
-					/data
-					/config
-					/db_structure
-					/.xml
-					/README
-			}
-
-			header / Strict-Transport-Security "max-age=31536000;"
-
-	}
-EOT
-
-    echo "-------------------------------------------"
-    echo "Creating the Caddy Service"
-    echo "-------------------------------------------"
-	
-   cat >/etc/systemd/system/caddy.service <<EOL
-	[Unit]
-	Description=Caddy HTTP/2 web server
-	Documentation=https://caddyserver.com/docs
-	After=network-online.target
-	Wants=network-online.target systemd-networkd-wait-online.service
-
-	[Service]
-	Restart=on-failure
-
-	User=www-data
-	Group=www-data
-
-	Environment=HOME=/etc/ssl/caddy
-
-	ExecStart=/usr/local/bin/caddy -log stdout -agree=true -conf=/etc/caddy/Caddyfile -root=/var/tmp
-	ExecReload=/bin/kill -USR1 $MAINPID
-
-	LimitNOFILE=4096
-	LimitNPROC=64
-
-	PrivateTmp=true
-	PrivateDevices=true
-	ProtectHome=true
-	ProtectSystem=full
-	ReadWriteDirectories=/etc/ssl/caddy
-
-	CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-	AmbientCapabilities=CAP_NET_BIND_SERVICE
-	NoNewPrivileges=true
-
-	[Install]
-	WantedBy=multi-user.target " >> /etc/systemd/system/caddy.service
+	WantedBy=multi-user.target
 EOL
 
     echo "-------------------------------------------"
@@ -741,7 +530,73 @@ EOL
 }
 
 function install_code { #FIX
-    echo "How did you get to this function? I MADE SO MANY CODE BLOCKS :/"
+	# CERT_PATH=/etc/ssl/caddy/.caddy/acme/acme-v01.api.letsencrypt.org/sites/$DOMAIN_NAME
+	# FILEPATH=/usr/share/loolwsd
+
+	# apt-get install apt-transport-https ca-certificates curl software-properties-common -y
+	# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+	# add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+	
+	# apt-get update
+	# apt-get install docker-ce -y
+	
+	# docker run -t -d -p 127.0.0.1:9980:9980 --name collabora -e "domain=$DOMAIN_NAME" --restart always --cap-add MKNOD collabora/code
+	# docker cp collabora:/opt/collaboraoffice5.1/ /opt/
+	# docker cp collabora:/usr/bin/loolforkit /usr/bin/
+	# docker cp collabora:/usr/bin/loolmap /usr/bin/
+	# docker cp collabora:/usr/bin/loolmount /usr/bin/
+	# docker cp collabora:/usr/bin/looltool /usr/bin/
+	# docker cp collabora:/usr/bin/loolwsd /usr/bin/
+	# docker cp collabora:/usr/bin/loolwsd-systemplate-setup /usr/bin/
+	# docker cp collabora:/etc/loolwsd/ /etc/
+	# docker cp collabora:/usr/share/loolwsd/ /usr/share/
+	# docker cp collabora:/usr/lib/libPocoCrypto.so.45 /usr/lib/
+	# docker cp collabora:/usr/lib/libPocoFoundation.so.45 /usr/lib/
+	# docker cp collabora:/usr/lib/libPocoJSON.so.45 /usr/lib/
+	# docker cp collabora:/usr/lib/libPocoNet.so.45 /usr/lib/
+	# docker cp collabora:/usr/lib/libPocoNetSSL.so.45 /usr/lib/
+	# docker cp collabora:/usr/lib/libPocoUtil.so.45 /usr/lib/
+	# docker cp collabora:/usr/lib/libPocoXML.so.45 /usr/lib/
+	# docker stop collabora
+	# docker rm collabora
+	
+	# #rm /etc/loolwsd/*.pem
+	
+	# USERNAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "Type the CODE Admin Username : " 8 93 3>&1 1>&2 2>&3)
+	# PASSWORD=$(whiptail --title "Desgyz NextCloud Installer" --passwordbox "Type the CODE Admin Password: " 8 93 3>&1 1>&2 2>&3)
+
+	# sed -i "s/<cert_file_path desc="Path to the cert file" relative="false">\/etc\/loolwsd\/cert.pem<\/cert_file_path>/<cert_file_path desc="Path to the cert file" relative="false">\/etc\/ssl\/caddy\/.caddy\/acme\/acme-v01.api.letsencrypt.org\/sites\/$DOMAIN_NAME.crt<\/cert_file_path>" /etc/loolwsd/loolwsd.xml
+	# sed -i "s/<key_file_path desc="Path to the key file" relative="false">\/etc\/loolwsd\/key.pem<\/key_file_path>/<key_file_path desc="Path to the key file" relative="false">\/etc\/ssl\/caddy\/.caddy\/acme\/acme-v01.api.letsencrypt.org\/sites\/$DOMAIN_NAME.key<\/key_file_path>" /etc/loolwsd/loolwsd.xml
+	# sed -i "s/<ca_file_path desc="Path to the ca file" relative="false">\/etc\/loolwsd\/ca-chain.cert.pem</ca_file_path>/<ca_file_path desc="Path to the ca file" relative="false">\/etc\/ssl\/caddy\/.caddy\/acme\/acme-v01.api.letsencrypt.org\/sites\/$DOMAIN_NAME.crt</ca_file_path>" /etc/loolwsd/loolwsd.xml
+	# sed -i "s@><\/file_server_root_path>@>$FILEPATH<\/file_server_root_path>@g" /etc/loolwsd/loolwsd.xml
+	# sed -i "s@><\/username>@>$USERNAME<\/username>@g" /etc/loolwsd/loolwsd.xml
+	# sed -i "s@><\/password>@>$PASSWORD<\/password>@g" /etc/loolwsd/loolwsd.xml
+
+	# useradd lool
+	# setcap cap_fowner,cap_mknod,cap_sys_chroot=ep /usr/bin/loolforkit
+	# setcap cap_sys_admin=ep /usr/bin/loolmount
+	# mkdir -p /var/cache/loolwsd/
+	# mkdir -p /opt/lool/child-roots/
+	# chown -R lool:lool /var/cache/loolwsd/
+	# chown -R lool:lool /opt/lool/child-roots/
+
+	# /usr/bin/loolwsd-systemplate-setup /opt/lool/systemplate /opt/collaboraoffice5.1/
+	# chown -R lool:lool /opt/lool/systemplate
+	
+	# cat >/etc/systemd/system/loolwsd.service <<EOL
+	# [Unit]
+	# Description=loolwsd as a service
+
+	# [Service]
+	# User=lool
+	# ExecStart=/usr/bin/loolwsd --o:sys_template_path=/opt/lool/systemplate --o:lo_template_path=/opt/collaboraoffice5.1 --o:child_root_path=/opt/lool/child-roots --o:file_server_root_path=/usr/share/loolwsd
+	# ExecReload=/bin/kill -HUP $MAINPID
+	# KillMode=process
+	# Restart=on-failure
+
+	# [Install]
+	# WantedBy=multi-user.target
+# EOL
     echo "I haven't finished programming the install CODE script, it seems to be quite difficult. Give me some time please."
     echo "Congratulation for getting this far, here take a free exit. I'm all out of cookies :("
     sleep 3
@@ -1050,7 +905,7 @@ whiptail --ok-button "Install" --title "Desgyz NextCloud Installer" --checklist 
 "MySQL" "Database for NextCloud" on \
 "PHP5.6" "An older version of PHP" off \
 "PHP" "The latest version of PHP (Hasn't been tested yet)" off \
-#"CODE" "Collabora Online Development Edition addon for NextCloud" off \
+"CODE" "Collabora Online Development Edition addon for NextCloud" off \
 "SecPatches" "Subtle security patches" off \
 2>results
 while read choice
@@ -1061,7 +916,7 @@ do
 		   "MySQL") 		    ins_mysql="true";;
 		   "PHP5.6") 			ins_php5.6="true";;
 		   "PHP") 			    ins_php="true";;
-		   "CODE") 			    ins_code="true";;
+		   #"CODE") 			    ins_code="true";;
 		   "SecPatches") 	    ins_secpatches="true";;
                 *)
                 ;;
@@ -1089,7 +944,7 @@ then
         config_caddyphp5.6
         install_secpatches5.6
 
-elif [[ ins_php5.6 && ins_CODE ]] ; 			    
+elif [[ ins_php5.6 && ins_code ]] ; 			    
 then 	
         whiptail --title "Desgyz NextCloud Installer" --msgbox " \n This function does not work! You may or may not of broken things! \n " 8 44
         exit 1
@@ -1098,9 +953,9 @@ then
         #install_caddy
         #install_php5.6	
         #install_code
-        #config_caddyphp5.6code
+        #config_caddyphp5.6
 
-elif [[  ins_php5.6 && ins_CODE && ins_secpatches ]] ; 			    
+elif [[  ins_php5.6 && ins_code && ins_secpatches ]] ; 			    
 then 	
         whiptail --title "Desgyz NextCloud Installer" --msgbox " \n This function does not work! You may or may not of broken things! \n " 8 44
         exit 1
@@ -1109,7 +964,7 @@ then
         #install_caddy
         #install_php5.6	
         #install_code
-        #config_caddyphp5.6code
+        #config_caddyphp5.6
         #install_secpatches5.6
 
 elif [[ ins_php ]] ; 			    
@@ -1129,7 +984,7 @@ then
         config_caddyphp
         install_secpatches
 
-elif [[ ins_php && ins_CODE ]]; 			    
+elif [[ ins_php && ins_code ]]; 			    
 then 	
         whiptail --title "Desgyz NextCloud Installer" --msgbox " \n This function does not work! You may or may not of broken things! \n " 8 44
         exit 1
@@ -1138,9 +993,9 @@ then
         #install_caddy
         #install_php	
         #install_code
-        #config_caddyphpcode
+        #config_caddyphp
 
-elif [[ ins_php && ins_CODE && ins_secpatches ]] ; 			    
+elif [[ ins_php && ins_code && ins_secpatches ]] ; 			    
 then 	
         whiptail --title "Desgyz NextCloud Installer" --msgbox " \n This function does not work! You may or may not of broken things! \n " 8 44\
         exit 1
@@ -1149,7 +1004,7 @@ then
         #install_caddy
         #install_php	
         #install_code
-        #config_caddyphpcode
+        #config_caddyphp
         #install_secpatches
 else
     whiptail --title "Desgyz NextCloud Installer" --msgbox " \n Something Broke! \n " 8 44
