@@ -133,24 +133,25 @@ function install_nextcloud {
     # NextCloud Install/Config
     # -------------------------------------------    
     
-NEXTCLOUD_VERSION=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What version of NextCloud would you like to install?? " 8 93 3>&1 1>&2 2>&3)
-DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
+    NEXTCLOUD_VERSION=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What version of NextCloud would you like to install?? " 8 93 3>&1 1>&2 2>&3)
+    DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
+    
     echo "-------------------------------------------"
     echo "Creating NextCloud Directory"
     echo "-------------------------------------------"
     
-mkdir -p /var/www/$DOMAIN_NAME/
-chown -R www-data:www-data /var/www/$DOMAIN_NAME/
-cd /var/www/$DOMAIN_NAME/
+    mkdir -p /var/www/$DOMAIN_NAME/
+    chown -R www-data:www-data /var/www/$DOMAIN_NAME/
+    cd /var/www/$DOMAIN_NAME/
 
     echo "-------------------------------------------"
     echo "Downloading NextCloud"
     echo "-------------------------------------------"
     
-wget https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2
-tar -vxjf nextcloud-$NEXTCLOUD_VERSION.tar.bz2
-rm nextcloud-$NEXTCLOUD_VERSION.tar.bz2
-chown -R www-data:www-data /var/www/$DOMAIN_NAME/
+    wget https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2
+    tar -vxjf nextcloud-$NEXTCLOUD_VERSION.tar.bz2
+    rm nextcloud-$NEXTCLOUD_VERSION.tar.bz2
+    chown -R www-data:www-data /var/www/$DOMAIN_NAME/
 
     echo "-------------------------------------------"
     echo "Creating NextCloud Data Directory"
@@ -158,8 +159,8 @@ chown -R www-data:www-data /var/www/$DOMAIN_NAME/
     
     DATA_DIR=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "Where would you like to store the NextCloud Data Directory? " 8 93 3>&1 1>&2 2>&3)
     
-mkdir -p $DATA_DIR
-chown -R www-data:www-data $DATA_DIR
+    mkdir -p $DATA_DIR
+    chown -R www-data:www-data $DATA_DIR
     
     echo "-------------------------------------------"
     echo "Your NextCloud Data Directory is $DATA_DIR, you will need this for the Web Setup."
@@ -175,19 +176,19 @@ function install_caddy {
     echo "-------------------------------------------"
     echo "Installing Caddy"
     echo "-------------------------------------------"
+    curl -fsSL https://getcaddy.com | bash
+    setcap cap_net_bind_service=+ep /usr/local/bin/caddy
     
-curl -fsSL https://getcaddy.com | bash
-setcap cap_net_bind_service=+ep /usr/local/bin/caddy
     echo "-------------------------------------------"
     echo "Configuring Caddy Folders"
     echo "-------------------------------------------"
     
-mkdir /etc/caddy
-touch /etc/caddy/Caddyfile
-chown -R root:www-data /etc/caddy
-mkdir /etc/ssl/caddy
-chown -R www-data:root /etc/ssl/caddy
-chmod 0770 /etc/ssl/caddy
+    mkdir /etc/caddy
+    touch /etc/caddy/Caddyfile
+    chown -R root:www-data /etc/caddy
+    mkdir /etc/ssl/caddy
+    chown -R www-data:root /etc/ssl/caddy
+    chmod 0770 /etc/ssl/caddy
 }
 
 function install_mysql {
@@ -240,12 +241,12 @@ function install_mysql {
     echo "Creating the NextCloud Database"
     echo "-------------------------------------------"
     
-mysql -u root --password=$MYSQL_PASSWORD -e "CREATE DATABASE nextcloud; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost' IDENTIFIED BY 'nextcloudPassword'; FLUSH PRIVILEGES;"
+    mysql -u root --password=$MYSQL_PASSWORD -e "CREATE DATABASE nextcloud; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost' IDENTIFIED BY 'nextcloudPassword'; FLUSH PRIVILEGES;"
     echo "-------------------------------------------"
     echo "Restarting MySQL"
     echo "-------------------------------------------"
     
-service mysql restart
+    service mysql restart
 }
 
 function install_php5.6 {
@@ -257,18 +258,18 @@ function install_php5.6 {
     echo "-------------------------------------------"    
     echo "Adding PHP5.6 repository and installing PHP5.6"
     echo "-------------------------------------------"
-add-apt-repository ppa:ondrej/php -y
-apt-get update
+    add-apt-repository ppa:ondrej/php -y
+    apt-get update
     apt-get install php5.6-fpm php5.6-json php5.6-curl php5.6-ldap php5.6-imap php5.6-gd php5.6-mysql php5.6-xml php5.6-zip php5.6-intl php5.6-mcrypt php5.6-imagick php5.6-mbstring php5.6-cli -y 
     echo "-------------------------------------------"
     echo "Editing the php.ini"
     echo "-------------------------------------------"
     
-sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/5.6/fpm/php.ini
-sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/5.6/fpm/php.ini
-sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=1/" /etc/php/5.6/fpm/php.ini 
-sed -i "s/upload_max_filesize = .*/upload_max_filesize = 500M/" /etc/php/5.6/fpm/php.ini
-sed -i "s/post_max_size = .*/post_max_size = 500M/" /etc/php/5.6/fpm/php.ini
+    sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/5.6/fpm/php.ini
+    sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/5.6/fpm/php.ini
+    sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=1/" /etc/php/5.6/fpm/php.ini 
+    sed -i "s/upload_max_filesize = .*/upload_max_filesize = 500M/" /etc/php/5.6/fpm/php.ini
+    sed -i "s/post_max_size = .*/post_max_size = 500M/" /etc/php/5.6/fpm/php.ini
 }
 
 function install_php {
@@ -287,11 +288,11 @@ function install_php {
     echo "Editing the php.ini"
     echo "-------------------------------------------"
     
-sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.0/fpm/php.ini
-sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/fpm/php.ini
-sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=1/" /etc/php/7.0/fpm/php.ini 
-sed -i "s/upload_max_filesize = .*/upload_max_filesize = 500M/" /etc/php/7.0/fpm/php.ini
-sed -i "s/post_max_size = .*/post_max_size = 500M/" /etc/php/7.0/fpm/php.ini
+    sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.0/fpm/php.ini
+    sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/fpm/php.ini
+    sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=1/" /etc/php/7.0/fpm/php.ini 
+    sed -i "s/upload_max_filesize = .*/upload_max_filesize = 500M/" /etc/php/7.0/fpm/php.ini
+    sed -i "s/post_max_size = .*/post_max_size = 500M/" /etc/php/7.0/fpm/php.ini
 }
 
 function config_caddyphp5.6 {
@@ -300,52 +301,52 @@ function config_caddyphp5.6 {
     # Caddyfile and Caddy Service Installation (PHP5.6)
     # -------------------------------------------
     
-DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
-TLS_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email address for the SSL cert? " 8 93 3>&1 1>&2 2>&3)
-    
+    DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
+    TLS_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email address for the SSL cert? " 8 93 3>&1 1>&2 2>&3)
+
     echo "-------------------------------------------"
     echo "Configuring the CaddyFile"
     echo "-------------------------------------------"
     
-cat >/etc/caddy/Caddyfile <<EOT
-    $DOMAIN_NAME {
-        root /var/www/$DOMAIN_NAME/nextcloud
-        log /var/tmp/access.log
-        errors /var/tmp/error.log
-        tls $TLS_EMAIL
-        gzip
-        fastcgi / /var/run/php/php5.6-fpm.sock {
-                env PATH /bin
-                ext .php
-                split .php
-        }
-        rewrite {
-                r ^/index.php/.*$
-                to /index.php?{query}
-        }
-        # client support (e.g. os x calendar / contacts)
-        redir /.well-known/carddav /remote.php/carddav 301
-        redir /.well-known/caldav /remote.php/caldav 301
-        # remove trailing / as it causes errors with php-fpm
-        rewrite {
-                r ^/remote.php/(webdav|caldav|carddav|dav)(\/?)$
-                to /remote.php/{1}
-        }
-        rewrite {
-                r ^/remote.php/(webdav|caldav|carddav|dav)/(.+?)(\/?)$
-                to /remote.php/{1}/{2}
-        }
-        # .htaccess / data / config / ... shouldn't be accessible from outside
-        status 403 {
-                /.htacces
-                /data
-                /config
-                /db_structure
-                /.xml
-                /README
-        }
-        header / Strict-Transport-Security "max-age=31536000;"
-   }
+    cat >/etc/caddy/Caddyfile <<EOT
+        $DOMAIN_NAME {
+            root /var/www/$DOMAIN_NAME/nextcloud
+            log /var/tmp/access.log
+            errors /var/tmp/error.log
+            tls $TLS_EMAIL
+            gzip
+            fastcgi / /var/run/php/php5.6-fpm.sock {
+                    env PATH /bin
+                    ext .php
+                    split .php
+            }
+            rewrite {
+                    r ^/index.php/.*$
+                    to /index.php?{query}
+            }
+            # client support (e.g. os x calendar / contacts)
+            redir /.well-known/carddav /remote.php/carddav 301
+            redir /.well-known/caldav /remote.php/caldav 301
+            # remove trailing / as it causes errors with php-fpm
+            rewrite {
+                    r ^/remote.php/(webdav|caldav|carddav|dav)(\/?)$
+                    to /remote.php/{1}
+            }
+            rewrite {
+                    r ^/remote.php/(webdav|caldav|carddav|dav)/(.+?)(\/?)$
+                    to /remote.php/{1}/{2}
+            }
+            # .htaccess / data / config / ... shouldn't be accessible from outside
+            status 403 {
+                    /.htacces
+                    /data
+                    /config
+                    /db_structure
+                    /.xml
+                    /README
+            }
+            header / Strict-Transport-Security "max-age=31536000;"
+       }
 EOT
 
     echo "-------------------------------------------"
@@ -402,96 +403,96 @@ function config_caddyphp {
     # Caddyfile and Caddy Service Installation (PHP7)
     # -------------------------------------------
 
-DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
-TLS_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email address for the SSL cert? " 8 93 3>&1 1>&2 2>&3)
+    DOMAIN_NAME=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your domain name? " 8 93 3>&1 1>&2 2>&3)
+    TLS_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email address for the SSL cert? " 8 93 3>&1 1>&2 2>&3)
     
     echo "-------------------------------------------"
     echo "Configuring the CaddyFile"
     echo "-------------------------------------------"
     
-cat >/etc/caddy/Caddyfile <<EOT
-$DOMAIN_NAME {
-root /var/www/$DOMAIN_NAME/nextcloud
-log /var/tmp/access.log
-errors /var/tmp/error.log
-tls $TLS_EMAIL
-gzip
-fastcgi / /var/run/php/php7.0-fpm.sock {
-env PATH /bin
-ext .php
-split .php
-}
-rewrite {
-r ^/index.php/.*$
-to /index.php?{query}
-}
+    cat >/etc/caddy/Caddyfile <<EOT
+    $DOMAIN_NAME {
+    root /var/www/$DOMAIN_NAME/nextcloud
+    log /var/tmp/access.log
+    errors /var/tmp/error.log
+    tls $TLS_EMAIL
+    gzip
+    fastcgi / /var/run/php/php7.0-fpm.sock {
+    env PATH /bin
+    ext .php
+    split .php
+    }
+    rewrite {
+    r ^/index.php/.*$
+    to /index.php?{query}
+    }
 
-# client support (e.g. os x calendar / contacts)
-redir /.well-known/carddav /remote.php/carddav 301
-redir /.well-known/caldav /remote.php/caldav 301
+    # client support (e.g. os x calendar / contacts)
+    redir /.well-known/carddav /remote.php/carddav 301
+    redir /.well-known/caldav /remote.php/caldav 301
 
-# remove trailing / as it causes errors with php-fpm
-rewrite {
-r ^/remote.php/(webdav|caldav|carddav|dav)(\/?)$
-to /remote.php/{1}
-}
+    # remove trailing / as it causes errors with php-fpm
+    rewrite {
+    r ^/remote.php/(webdav|caldav|carddav|dav)(\/?)$
+    to /remote.php/{1}
+    }
 
-rewrite {
-r ^/remote.php/(webdav|caldav|carddav|dav)/(.+?)(\/?)$
-to /remote.php/{1}/{2}
-}
+    rewrite {
+    r ^/remote.php/(webdav|caldav|carddav|dav)/(.+?)(\/?)$
+    to /remote.php/{1}/{2}
+    }
 
-# .htaccess / data / config / ... shouldn't be accessible from outside
-status 403 {
-/.htacces
-/data
-/config
-/db_structure
-/.xml
-/README
-}
+    # .htaccess / data / config / ... shouldn't be accessible from outside
+    status 403 {
+    /.htacces
+    /data
+    /config
+    /db_structure
+    /.xml
+    /README
+    }
 
-header / Strict-Transport-Security "max-age=31536000;"
+    header / Strict-Transport-Security "max-age=31536000;"
 
-}
+    }
 EOT
     echo "-------------------------------------------"
     echo "Creating the Caddy Service"
     echo "-------------------------------------------"
     
-   cat >/etc/systemd/system/caddy.service <<EOL
-[Unit]
-Description=Caddy HTTP/2 web server
-Documentation=https://caddyserver.com/docs
-After=network-online.target
-Wants=network-online.target systemd-networkd-wait-online.service
+    cat >/etc/systemd/system/caddy.service <<EOL
+    [Unit]
+    Description=Caddy HTTP/2 web server
+    Documentation=https://caddyserver.com/docs
+    After=network-online.target
+    Wants=network-online.target systemd-networkd-wait-online.service
 
-[Service]
-Restart=on-failure
+    [Service]
+    Restart=on-failure
 
-User=www-data
-Group=www-data
+    User=www-data
+    Group=www-data
 
-Environment=HOME=/etc/ssl/caddy
+    Environment=HOME=/etc/ssl/caddy
 
-ExecStart=/usr/local/bin/caddy -log stdout -agree=true -conf=/etc/caddy/Caddyfile -root=/var/tmp
-ExecReload=/bin/kill -USR1 $MAINPID
+    ExecStart=/usr/local/bin/caddy -log stdout -agree=true -conf=/etc/caddy/Caddyfile -root=/var/tmp
+    ExecReload=/bin/kill -USR1 $MAINPID
 
-LimitNOFILE=4096
-LimitNPROC=64
+    LimitNOFILE=4096
+    LimitNPROC=64
 
-PrivateTmp=true
-PrivateDevices=true
-ProtectHome=true
-ProtectSystem=full
-ReadWriteDirectories=/etc/ssl/caddy
+    PrivateTmp=true
+    PrivateDevices=true
+    ProtectHome=true
+    ProtectSystem=full
+    ReadWriteDirectories=/etc/ssl/caddy
 
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-AmbientCapabilities=CAP_NET_BIND_SERVICE
-NoNewPrivileges=true
+    CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+    AmbientCapabilities=CAP_NET_BIND_SERVICE
+    NoNewPrivileges=true
 
-[Install]
-WantedBy=multi-user.target
+    [Install]
+    WantedBy=multi-user.target
 EOL
 
     echo "-------------------------------------------"
@@ -570,7 +571,7 @@ EOL
     #exit 1
 }
 
-function install_secpatches6.5 {
+function install_secpatches5.6{
 
     # -------------------------------------------
     # Configure Security Patches (PHP5.6)
@@ -596,9 +597,9 @@ function install_secpatches6.5 {
     echo "Changing SSH Configs"
     echo "-------------------------------------------"
     
-sed -i "s/Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
-sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
-# -------------------------------------------
+    sed -i "s/Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+    sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+    # -------------------------------------------
     # Firewall Stuff
     # -------------------------------------------
     
@@ -606,24 +607,24 @@ sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_
     echo "Editing Firewall"
     echo "-------------------------------------------"
     
-ufw default allow outgoing
-ufw default deny incoming
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw allow $SSH_PORT/tcp
-ufw enable
-ufw status
+    ufw default allow outgoing
+    ufw default deny incoming
+    ufw allow 80/tcp
+    ufw allow 443/tcp
+    ufw allow $SSH_PORT/tcp
+    ufw enable
+    ufw status
 
-# -------------------------------------------
+    # -------------------------------------------
     # FS Stuff
     # -------------------------------------------
     echo "-------------------------------------------"
     echo "Editing fstab"
     echo "-------------------------------------------"
     
-echo "
-tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" >> /etc/fstab
-# -------------------------------------------
+    echo "
+    tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" >> /etc/fstab
+    # -------------------------------------------
     # SysCtl Stuff
     # -------------------------------------------
 
@@ -631,82 +632,82 @@ tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" >> /etc/fst
     echo "Editing SYSCTL"
     echo "-------------------------------------------"
     
-sed -i 's/#net.ipv4.conf.default.rp_filter=1/net.ipv4.conf.all.rp_filter = 1/' /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.rp_filter=1/net.ipv4.conf.default.rp_filter = 1/' /etc/sysctl.conf
-echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.accept_source_route = 0/net.ipv4.conf.all.accept_source_route = 0/' /etc/sysctl.conf
-sed -i 's/#net.ipv6.conf.all.accept_source_route = 0/net.ipv6.conf.all.accept_source_route = 0/' /etc/sysctl.conf
-echo "net.ipv4.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
-echo "net.ipv6.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.send_redirects = 0/net.ipv4.conf.all.send_redirects = 0/' /etc/sysctl.conf
-echo "net.ipv4.conf.default.send_redirects = 0" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.tcp_syncookies=1/net.ipv4.tcp_syncookies = 1/' /etc/sysctl.conf
-echo "net.ipv4.tcp_max_syn_backlog = 2048" >> /etc/sysctl.conf
-echo "net.ipv4.tcp_synack_retries = 2" >> /etc/sysctl.conf
-echo "net.ipv4.tcp_syn_retries = 5" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.log_martians = 1/net.ipv4.conf.all.log_martians = 1/' /etc/sysctl.conf
-echo "net.ipv4.icmp_ignore_bogus_error_responses = 1" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.accept_redirects = 0/net.ipv4.conf.all.accept_redirects = 0/' /etc/sysctl.conf
-sed -i 's/#net.ipv6.conf.all.accept_redirects = 0/net.ipv6.conf.all.accept_redirects = 0/' /etc/sysctl.conf
-echo "net.ipv4.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
-echo "net.ipv6.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
-echo "net.ipv4.icmp_echo_ignore_all = 1" >> /etc/sysctl.conf
-sysctl -p
+    sed -i 's/#net.ipv4.conf.default.rp_filter=1/net.ipv4.conf.all.rp_filter = 1/' /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.rp_filter=1/net.ipv4.conf.default.rp_filter = 1/' /etc/sysctl.conf
+    echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.accept_source_route = 0/net.ipv4.conf.all.accept_source_route = 0/' /etc/sysctl.conf
+    sed -i 's/#net.ipv6.conf.all.accept_source_route = 0/net.ipv6.conf.all.accept_source_route = 0/' /etc/sysctl.conf
+    echo "net.ipv4.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.send_redirects = 0/net.ipv4.conf.all.send_redirects = 0/' /etc/sysctl.conf
+    echo "net.ipv4.conf.default.send_redirects = 0" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.tcp_syncookies=1/net.ipv4.tcp_syncookies = 1/' /etc/sysctl.conf
+    echo "net.ipv4.tcp_max_syn_backlog = 2048" >> /etc/sysctl.conf
+    echo "net.ipv4.tcp_synack_retries = 2" >> /etc/sysctl.conf
+    echo "net.ipv4.tcp_syn_retries = 5" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.log_martians = 1/net.ipv4.conf.all.log_martians = 1/' /etc/sysctl.conf
+    echo "net.ipv4.icmp_ignore_bogus_error_responses = 1" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.accept_redirects = 0/net.ipv4.conf.all.accept_redirects = 0/' /etc/sysctl.conf
+    sed -i 's/#net.ipv6.conf.all.accept_redirects = 0/net.ipv6.conf.all.accept_redirects = 0/' /etc/sysctl.conf
+    echo "net.ipv4.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
+    echo "net.ipv6.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
+    echo "net.ipv4.icmp_echo_ignore_all = 1" >> /etc/sysctl.conf
+    sysctl -p
 
-# -------------------------------------------
+    # -------------------------------------------
     # Host file Stuff
     # -------------------------------------------
-echo "-------------------------------------------"
+    echo "-------------------------------------------"
     echo "Editing Hosts"
     echo "-------------------------------------------"
     
-rm -R /etc/host.conf
-echo "
-order bind,hosts
-multi on
-nospoof on" >> /etc/host.conf
-# -------------------------------------------
+    rm -R /etc/host.conf
+    echo "
+    order bind,hosts
+    multi on
+    nospoof on" >> /etc/host.conf
+    # -------------------------------------------
     # PHP Stuff
     # -------------------------------------------
     
-PHP_SESSION_ID=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is the PHP Session ID? " 8 93 3>&1 1>&2 2>&3)
+    PHP_SESSION_ID=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is the PHP Session ID? " 8 93 3>&1 1>&2 2>&3)
 
     echo "-------------------------------------------"
     echo "Patching PHP"
     echo "-------------------------------------------"
 
-echo "register_globals = Off" >> /etc/php/5.6/fpm/php.ini
-sed -i 's/html_errors = On/html_errors = Off/' /etc/php/5.6/fpm/php.ini
-echo "magic_quotes_gpc = Off" >> /etc/php/5.6/fpm/php.ini
-sed -i 's/mail.add_x_header = On/mail.add_x_header = Off' /etc/php/5.6/fpm/php.ini
-sed -i "s/session.name = PHPSESSID/session.name = $PHP_SESSION_ID/" /etc/php/5.6/fpm/php.ini
-sed -i 's/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,exec,system,shell_exec,passthru/' /etc/php/5.6/fpm/php.ini
+    echo "register_globals = Off" >> /etc/php/5.6/fpm/php.ini
+    sed -i 's/html_errors = On/html_errors = Off/' /etc/php/5.6/fpm/php.ini
+    echo "magic_quotes_gpc = Off" >> /etc/php/5.6/fpm/php.ini
+    sed -i 's/mail.add_x_header = On/mail.add_x_header = Off' /etc/php/5.6/fpm/php.ini
+    sed -i "s/session.name = PHPSESSID/session.name = $PHP_SESSION_ID/" /etc/php/5.6/fpm/php.ini
+    sed -i 's/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,exec,system,shell_exec,passthru/' /etc/php/5.6/fpm/php.ini
 
-# -------------------------------------------
+    # -------------------------------------------
     # Fail2Ban Stuff
     # -------------------------------------------
     
-ALERT_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email for alerts? " 8 93 3>&1 1>&2 2>&3)
+    ALERT_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email for alerts? " 8 93 3>&1 1>&2 2>&3)
     echo "-------------------------------------------"
     echo "Installing Fail2Ban"
     echo "-------------------------------------------"
     
-apt install fail2ban
+    apt install fail2ban
     
     echo "-------------------------------------------"
     echo "Setting up Fail2Ban"
     echo "-------------------------------------------"
     
-echo "
-[sshd]
+    echo "
+    [sshd]
 
-enabled  = true
-port     = $SSH_PORT
-filter   = sshd
-logpath  = /var/log/auth.log
-maxretry = 3" >> /etc/fail2ban/jail.conf
-sed -i "s/destemail = root@localhost/destemail = $ALERT_EMAIL/" /etc/fail2ban/jail.conf
-sed -i 's/action = %(action_)s/action = %(action_mwl)s/' /etc/fail2ban/jail.conf
+    enabled  = true
+    port     = $SSH_PORT
+    filter   = sshd
+    logpath  = /var/log/auth.log
+    maxretry = 3" >> /etc/fail2ban/jail.conf
+    sed -i "s/destemail = root@localhost/destemail = $ALERT_EMAIL/" /etc/fail2ban/jail.conf
+    sed -i 's/action = %(action_)s/action = %(action_mwl)s/' /etc/fail2ban/jail.conf
 }
 
 function install_secpatches {
@@ -735,9 +736,9 @@ function install_secpatches {
     echo "-------------------------------------------"
     echo "Changing SSH Configs"
     echo "-------------------------------------------"
-sed -i "s/Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
-sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
-# -------------------------------------------
+    sed -i "s/Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+    sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+    # -------------------------------------------
     # Firewall Stuff
     # -------------------------------------------
     
@@ -745,24 +746,24 @@ sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_
     echo "Editing Firewall"
     echo "-------------------------------------------"
 
-ufw default allow outgoing
-ufw default deny incoming
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw allow $SSH_PORT/tcp
-ufw enable
-ufw status
+    ufw default allow outgoing
+    ufw default deny incoming
+    ufw allow 80/tcp
+    ufw allow 443/tcp
+    ufw allow $SSH_PORT/tcp
+    ufw enable
+    ufw status
 
-# -------------------------------------------
+    # -------------------------------------------
     # FS Stuff
     # -------------------------------------------
     
     echo "-------------------------------------------"
     echo "Editing fstab"
     echo "-------------------------------------------"
-echo "
-tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" >> /etc/fstab
-# -------------------------------------------
+    echo "
+    tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" >> /etc/fstab
+    # -------------------------------------------
     # SysCtl Stuff
     # -------------------------------------------
 
@@ -770,80 +771,81 @@ tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" >> /etc/fst
     echo "Editing SYSCTL"
     echo "-------------------------------------------"
 
-sed -i 's/#net.ipv4.conf.default.rp_filter=1/net.ipv4.conf.all.rp_filter = 1/' /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.rp_filter=1/net.ipv4.conf.default.rp_filter = 1/' /etc/sysctl.conf
-echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.accept_source_route = 0/net.ipv4.conf.all.accept_source_route = 0/' /etc/sysctl.conf
-sed -i 's/#net.ipv6.conf.all.accept_source_route = 0/net.ipv6.conf.all.accept_source_route = 0/' /etc/sysctl.conf
-echo "net.ipv4.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
-echo "net.ipv6.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.send_redirects = 0/net.ipv4.conf.all.send_redirects = 0/' /etc/sysctl.conf
-echo "net.ipv4.conf.default.send_redirects = 0" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.tcp_syncookies=1/net.ipv4.tcp_syncookies = 1/' /etc/sysctl.conf
-echo "net.ipv4.tcp_max_syn_backlog = 2048" >> /etc/sysctl.conf
-echo "net.ipv4.tcp_synack_retries = 2" >> /etc/sysctl.conf
-echo "net.ipv4.tcp_syn_retries = 5" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.log_martians = 1/net.ipv4.conf.all.log_martians = 1/' /etc/sysctl.conf
-echo "net.ipv4.icmp_ignore_bogus_error_responses = 1" >> /etc/sysctl.conf
-sed -i 's/#net.ipv4.conf.all.accept_redirects = 0/net.ipv4.conf.all.accept_redirects = 0/' /etc/sysctl.conf
-sed -i 's/#net.ipv6.conf.all.accept_redirects = 0/net.ipv6.conf.all.accept_redirects = 0/' /etc/sysctl.conf
-echo "net.ipv4.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
-echo "net.ipv6.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
-echo "net.ipv4.icmp_echo_ignore_all = 1" >> /etc/sysctl.conf
-sysctl -p
+    sed -i 's/#net.ipv4.conf.default.rp_filter=1/net.ipv4.conf.all.rp_filter = 1/' /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.rp_filter=1/net.ipv4.conf.default.rp_filter = 1/' /etc/sysctl.conf
+    echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.accept_source_route = 0/net.ipv4.conf.all.accept_source_route = 0/' /etc/sysctl.conf
+    sed -i 's/#net.ipv6.conf.all.accept_source_route = 0/net.ipv6.conf.all.accept_source_route = 0/' /etc/sysctl.conf
+    echo "net.ipv4.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.send_redirects = 0/net.ipv4.conf.all.send_redirects = 0/' /etc/sysctl.conf
+    echo "net.ipv4.conf.default.send_redirects = 0" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.tcp_syncookies=1/net.ipv4.tcp_syncookies = 1/' /etc/sysctl.conf
+    echo "net.ipv4.tcp_max_syn_backlog = 2048" >> /etc/sysctl.conf
+    echo "net.ipv4.tcp_synack_retries = 2" >> /etc/sysctl.conf
+    echo "net.ipv4.tcp_syn_retries = 5" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.log_martians = 1/net.ipv4.conf.all.log_martians = 1/' /etc/sysctl.conf
+    echo "net.ipv4.icmp_ignore_bogus_error_responses = 1" >> /etc/sysctl.conf
+    sed -i 's/#net.ipv4.conf.all.accept_redirects = 0/net.ipv4.conf.all.accept_redirects = 0/' /etc/sysctl.conf
+    sed -i 's/#net.ipv6.conf.all.accept_redirects = 0/net.ipv6.conf.all.accept_redirects = 0/' /etc/sysctl.conf
+    echo "net.ipv4.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
+    echo "net.ipv6.conf.default.accept_redirects = 0 " >> /etc/sysctl.conf
+    echo "net.ipv4.icmp_echo_ignore_all = 1" >> /etc/sysctl.conf
+    sysctl -p
 
-# -------------------------------------------
+    # -------------------------------------------
     # Host file Stuff
     # -------------------------------------------
 
-echo "-------------------------------------------"
+    echo "-------------------------------------------"
     echo "Editing Hosts"
     echo "-------------------------------------------"
-rm -R /etc/host.conf
-echo "
-order bind,hosts
-multi on
-nospoof on" >> /etc/host.conf
-# -------------------------------------------
+    
+    rm -R /etc/host.conf
+    echo "
+    order bind,hosts
+    multi on
+    nospoof on" >> /etc/host.conf
+    # -------------------------------------------
     # PHP Stuff
     # -------------------------------------------
-PHP_SESSION_ID=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is the PHP Session ID? " 8 93 3>&1 1>&2 2>&3)
+    PHP_SESSION_ID=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is the PHP Session ID? " 8 93 3>&1 1>&2 2>&3)
     
     echo "-------------------------------------------"
     echo "Patching PHP"
     echo "-------------------------------------------"
 
-echo "register_globals = Off" >> /etc/php/7.0/fpm/php.ini
-sed -i 's/html_errors = On/html_errors = Off/' /etc/php/7.0/fpm/php.ini
-echo "magic_quotes_gpc = Off" >> /etc/php/7.0/fpm/php.ini
-sed -i 's/mail.add_x_header = On/mail.add_x_header = Off' /etc/php/7.0/fpm/php.ini
-sed -i "s/session.name = PHPSESSID/session.name = $PHP_SESSION_ID/" /etc/php/7.0/fpm/php.ini
-sed -i 's/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,exec,system,shell_exec,passthru/' /etc/php/5.6/fpm/php.ini
+    echo "register_globals = Off" >> /etc/php/7.0/fpm/php.ini
+    sed -i 's/html_errors = On/html_errors = Off/' /etc/php/7.0/fpm/php.ini
+    echo "magic_quotes_gpc = Off" >> /etc/php/7.0/fpm/php.ini
+    sed -i 's/mail.add_x_header = On/mail.add_x_header = Off' /etc/php/7.0/fpm/php.ini
+    sed -i "s/session.name = PHPSESSID/session.name = $PHP_SESSION_ID/" /etc/php/7.0/fpm/php.ini
+    sed -i 's/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,exec,system,shell_exec,passthru/' /etc/php/5.6/fpm/php.ini
 
-# -------------------------------------------
+    # -------------------------------------------
     # Fail2Ban Stuff
     # -------------------------------------------
-ALERT_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email for alerts? " 8 93 3>&1 1>&2 2>&3)
+    ALERT_EMAIL=$(whiptail --title "Desgyz NextCloud Installer" --inputbox "What is your email for alerts? " 8 93 3>&1 1>&2 2>&3)
     
     echo "-------------------------------------------"
     echo "Installing Fail2Ban"
     echo "-------------------------------------------"
-apt install fail2ban
+    apt install fail2ban
     
     echo "-------------------------------------------"
     echo "Setting up Fail2Ban"
     echo "-------------------------------------------"
     
-echo "
-[sshd]
+    echo "
+    [sshd]
 
-enabled  = true
-port     = $SSH_PORT
-filter   = sshd
-logpath  = /var/log/auth.log
-maxretry = 3" >> /etc/fail2ban/jail.conf
-sed -i "s/destemail = root@localhost/destemail = $ALERT_EMAIL/" /etc/fail2ban/jail.conf
-sed -i 's/action = %(action_)s/action = %(action_mwl)s/' /etc/fail2ban/jail.conf
+    enabled  = true
+    port     = $SSH_PORT
+    filter   = sshd
+    logpath  = /var/log/auth.log
+    maxretry = 3" >> /etc/fail2ban/jail.conf
+    sed -i "s/destemail = root@localhost/destemail = $ALERT_EMAIL/" /etc/fail2ban/jail.conf
+    sed -i 's/action = %(action_)s/action = %(action_mwl)s/' /etc/fail2ban/jail.conf
 }
 
 # -------------------------------------------
