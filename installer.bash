@@ -571,7 +571,7 @@ EOL
     #exit 1
 }
 
-function install_secpatches5.6{
+function install_secpatches5.6 {
 
     # -------------------------------------------
     # Configure Security Patches (PHP5.6)
